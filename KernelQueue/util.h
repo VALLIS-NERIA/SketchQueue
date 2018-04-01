@@ -92,4 +92,7 @@ void inline my_sort(void* base, size_t num, size_t size,
     sort(base, num, size, cmp, NULL);
 }
 
+#define error printk
+//void error(char* message);
+
 #endif

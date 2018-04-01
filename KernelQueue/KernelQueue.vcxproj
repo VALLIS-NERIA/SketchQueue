@@ -61,7 +61,19 @@
   <ImportGroup Label="PropertySheets" />
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Platform)'=='x86'">
-    <IncludePath>$(SolutionDir)\linux-headers-4.2.0-27\include;$(SolutionDir)\linux-headers-4.2.0-27\arch\x86\include;$(SolutionDir)\linux-headers-4.2.0-27\include\uapi;$(SolutionDir)\linux-headers-4.2.0-27\arch\x86\include\uapi\</IncludePath>
+    <IncludePath>D:\Resources\linux-headers-4.2.0-27\include;D:\Resources\linux-headers-4.2.0-27\include\uapi;D:\Resources\linux-headers-4.2.0-27\arch\x86\include;D:\Resources\linux-headers-4.2.0-27\arch\x86\include\uapi;$(IncludePath)</IncludePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
+    <IncludePath>D:\Resources\linux-headers-4.2.0-27\include;D:\Resources\linux-headers-4.2.0-27\include\uapi;D:\Resources\linux-headers-4.2.0-27\arch\x86\include;D:\Resources\linux-headers-4.2.0-27\arch\x86\include\uapi;$(IncludePath)</IncludePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
+    <IncludePath>D:\Resources\linux-headers-4.2.0-27\include;D:\Resources\linux-headers-4.2.0-27\include\uapi;D:\Resources\linux-headers-4.2.0-27\arch\x86\include;D:\Resources\linux-headers-4.2.0-27\arch\x86\include\uapi;$(IncludePath)</IncludePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <IncludePath>D:\Resources\linux-headers-4.2.0-27\include;D:\Resources\linux-headers-4.2.0-27\include\uapi;D:\Resources\linux-headers-4.2.0-27\arch\x86\include;D:\Resources\linux-headers-4.2.0-27\arch\x86\include\uapi;$(IncludePath)</IncludePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <IncludePath>D:\Resources\linux-headers-4.2.0-27\include;D:\Resources\linux-headers-4.2.0-27\include\uapi;D:\Resources\linux-headers-4.2.0-27\arch\x86\include;D:\Resources\linux-headers-4.2.0-27\arch\x86\include\uapi;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemGroup>
     <ClInclude Include="countmax.h" />
@@ -70,6 +82,8 @@
     <ClInclude Include="fss.h" />
     <ClInclude Include="hashheap.h" />
     <ClInclude Include="hashtable.h" />
+    <ClInclude Include="sketches.h" />
+    <ClInclude Include="sketch_queue.h" />
     <ClInclude Include="util.h" />
   </ItemGroup>
   <ItemGroup>
@@ -79,6 +93,7 @@
     <ClCompile Include="hashheap.c" />
     <ClCompile Include="hashtable.c" />
     <ClCompile Include="main.c" />
+    <ClCompile Include="sketch_queue.c" />
     <ClCompile Include="util.c" />
   </ItemGroup>
   <ItemDefinitionGroup />
