@@ -28,6 +28,24 @@ void delete_pkt_queue(struct pkt_queue* me) {
     kfree(me);
 }
 
+void sketch_queue_parse(struct sketch_queue* me, char* s) {
+    char* arg[64];
+    int i = 0;
+    arg[i++] = s;
+    while (*s != '\0') {
+        if (*s == ' ') {
+            *s = '\0';
+            s++;
+            arg[i++] = s;            
+        }
+        s++;
+    }
+    if(i<me->sketch_count) {
+        error("insufficient params\n");
+        return;
+    }
+}
+
 void init_sketch_queue(struct sketch_queue* me, char** arg) {
     for (int i = 0; i < me->sketch_count; i++) {
         int para1, para2;
@@ -54,6 +72,7 @@ void init_sketch_queue(struct sketch_queue* me, char** arg) {
         }
     next:;
     }
+    //kfree(arg);
 }
 
 struct sketch_queue* new_sketch_queue(uint32_t sketch_mask) {
