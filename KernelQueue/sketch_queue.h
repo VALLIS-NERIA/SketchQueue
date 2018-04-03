@@ -31,9 +31,9 @@ struct pkt_queue* new_pkt_queue(size_t bufsize);
 
 int pq_size(struct pkt_queue* me);
 
-struct entry pq_peek(struct pkt_queue* me);
+int pq_peek(struct pkt_queue* me, struct entry* ret);
 
-inline int pq_empty(struct pkt_queue* me) {
+static inline int pq_empty(struct pkt_queue* me) {
     return !(me->tail == me->head);
 }
 
@@ -54,7 +54,10 @@ struct sketch_queue {
  */
 struct sketch_queue* new_sketch_queue(uint32_t sketch_mask);
 
+void sketch_queue_parse(struct sketch_queue* me, char* s);
+
 /* arg: each string should contians an integer or multiple integers sperated with commas. */
 void init_sketch_queue(struct sketch_queue* me, char** arg);
 
+void delete_sketch_queue(struct sketch_queue* me);
 #endif // SKETCH_QUEUE_H

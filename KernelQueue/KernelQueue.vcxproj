@@ -96,6 +96,9 @@
     <ClCompile Include="sketch_queue.c" />
     <ClCompile Include="util.c" />
   </ItemGroup>
+  <ItemGroup>
+    <Text Include="Makefile" />
+  </ItemGroup>
   <ItemDefinitionGroup />
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets" />

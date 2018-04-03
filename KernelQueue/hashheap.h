@@ -37,7 +37,7 @@ struct hash_heap* new_hash_heap(int max_size);
 
 int hash_heap_insert(struct hash_heap* this, struct flow_key* key, heap_data data);
 
-heap_data inline hash_heap_peek(struct hash_heap* this) {
+static heap_data inline hash_heap_peek(struct hash_heap* this) {
     if (this->size) {
         int last = (this->size) - 1;
         return this->elem[last].data;
@@ -45,7 +45,7 @@ heap_data inline hash_heap_peek(struct hash_heap* this) {
     return 0;
 }
 
-inline struct flow_key* hash_heap_peek_key(struct hash_heap* this) {
+static inline struct flow_key* hash_heap_peek_key(struct hash_heap* this) {
     if (this->size) {
         int last = (this->size) - 1;
         return this->elem[last].key;

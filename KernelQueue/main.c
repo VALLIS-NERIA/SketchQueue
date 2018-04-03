@@ -7,23 +7,22 @@
 #include "sketches.h"
 
 
-
-
-
-
-//MODULE_LICENSE("MIT");
-static struct countmax_sketch* cm;
+MODULE_LICENSE("Dual MIT/GPL");
+static struct sketch_queue* q;
 
 static int __init init(void) {
-    cm = new_countmax_sketch(100, 4);
-    struct flow_key key;
-    elemtype value = 10;
-    countmax_sketch_update(cm, &key, 10);
-    printk("%d\n", countmax_sketch_query(cm, &key));
+    printk("init begin!!!!\n");
+    q = new_sketch_queue(3);
+    printk("init!!!!\n");
+    sketch_queue_parse(q, "100,2 100");
+    printk("init ok!\n");
     return 0;
 }
 
-static void clean(void) { delete_countmax_sketch(cm); }
+static void clean(void) {
+    delete_sketch_queue(q);
+    printk("exit!\n");
+}
 
-//module_init(init);
-//module_exit(clean);
+module_init(init);
+module_exit(clean);

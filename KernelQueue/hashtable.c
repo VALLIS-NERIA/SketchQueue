@@ -75,7 +75,7 @@ static void htlist_insert(struct htlist_head* head, struct flow_key* key, ht_val
         p->value = value;
     }
 }
-
+int ht_count = 0;
 static int htlist_get(struct htlist_head* head, struct flow_key* key, ht_value* value) {
     struct htlist_node* p = head->first;
     while (p != NULL) {

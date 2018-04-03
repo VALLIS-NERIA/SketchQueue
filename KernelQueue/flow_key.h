@@ -11,7 +11,7 @@ struct flow_key {
     uint16_t protocol;
 };
 
-inline struct flow_key rand_flow_key() {
+static inline struct flow_key rand_flow_key(void) {
     struct flow_key key;
     key.srcip = rand_uint32();
     key.dstip = rand_uint32();
@@ -22,7 +22,7 @@ inline struct flow_key rand_flow_key() {
 }
 
 
-inline uint32_t flow_key_hash_old(struct flow_key* key) {
+static inline uint32_t flow_key_hash_old(struct flow_key* key) {
     int hashCode = (int)key->srcip;
     hashCode = (hashCode * 397) ^ (int)key->dstip;
     hashCode = (hashCode * 397) ^ (int)key->srcport;
@@ -31,7 +31,7 @@ inline uint32_t flow_key_hash_old(struct flow_key* key) {
     return (uint32_t)hashCode;
 }
 
-inline uint32_t flow_key_hash(struct flow_key* key, uint32_t bits) {
+static inline uint32_t flow_key_hash(struct flow_key* key, uint32_t bits) {
     uint32_t hash = sketch_hash_32(key->srcip, bits);
     hash ^= sketch_hash_32(key->dstip, bits);
     hash ^= sketch_hash_32(key->srcport, bits);
@@ -40,7 +40,7 @@ inline uint32_t flow_key_hash(struct flow_key* key, uint32_t bits) {
     return hash;
 }
 
-inline int flow_key_equal(struct flow_key* lhs, struct flow_key* rhs) {
+static inline int flow_key_equal(struct flow_key* lhs, struct flow_key* rhs) {
     return lhs->srcip == rhs->srcip && lhs->dstip == rhs->dstip && lhs->srcport == rhs->srcport &&
         lhs->dstport == rhs->dstport && lhs->protocol == rhs->protocol;
 }

@@ -25,21 +25,21 @@ struct sketch_base {
 
 #define SKETCH_VTABLE_DEC(var_name, sketch_name) \
     struct sketch_base ##var_name## = {                             \
-        .create = new_##sketch_name##_sketch,               \
-        .update = ##sketch_name##_sketch_update,                \
-        .query = ##sketch_name##_sketch_query,                  \
-        .delete = delete_##sketch_name##_sketch          \
+        .create = (void* (*)(int, ...)) new_##sketch_name##_sketch,               \
+        .update = (void (*)(void*, struct flow_key*, elemtype)) sketch_name##_sketch_update,                \
+        .query = (elemtype (*)(void*, struct flow_key*)) sketch_name##_sketch_query,                  \
+        .delete = (void (*)(void*)) delete_##sketch_name##_sketch          \
     }
 
 #define SKETCH_VTABLE_SET(var_name, sketch_name) do {  \
         var_name.instance = NULL; \
-        var_name.create = new_##sketch_name##_sketch;               \
-        var_name.update = ##sketch_name##_sketch_update;                \
-        var_name.query = ##sketch_name##_sketch_query;                  \
-        var_name.delete = delete_##sketch_name##_sketch;          \
+        var_name.create = (void* (*)(int, ...)) new_##sketch_name##_sketch;               \
+        var_name.update = (void (*)(void*, struct flow_key*, elemtype)) sketch_name##_sketch_update;                \
+        var_name.query = (elemtype (*)(void*, struct flow_key*)) sketch_name##_sketch_query;                  \
+        var_name.delete = (void (*)(void*)) delete_##sketch_name##_sketch;          \
     } while(0)
 
-inline struct sketch_base get_sketch_class(enum sketch_types type) {
+static inline struct sketch_base get_sketch_class(enum sketch_types type) {
     struct sketch_base ret;
     switch (type) {
     case sketch_countmax:

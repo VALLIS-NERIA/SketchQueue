@@ -26,7 +26,7 @@ struct hash_table {
 
 struct hash_table* new_hash_table(size_t bits);
 
-int ht_count = 0;
+
 
 void hash_table_insert(struct hash_table* htable, struct flow_key* key, ht_value value);
 int hash_table_get(struct hash_table* htable, struct flow_key* key, ht_value* value);
