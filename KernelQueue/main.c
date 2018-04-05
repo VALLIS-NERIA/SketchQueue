@@ -12,7 +12,7 @@ static struct sketch_queue* q;
 
 static int __init init(void) {
     printk("init begin!!!!\n");
-    q = new_sketch_queue(3);
+    q = new_sketch_queue(3, 1000);
     printk("init!!!!\n");
     sketch_queue_parse(q, "100,2 100");
     printk("init ok!\n");

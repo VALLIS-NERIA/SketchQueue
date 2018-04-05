@@ -94,6 +94,7 @@
     <ClCompile Include="hashtable.c" />
     <ClCompile Include="main.c" />
     <ClCompile Include="sketch_queue.c" />
+    <ClCompile Include="sketch_queue_thread.c" />
     <ClCompile Include="util.c" />
   </ItemGroup>
   <ItemGroup>

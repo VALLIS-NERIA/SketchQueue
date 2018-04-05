@@ -104,9 +104,10 @@ void delete_sketch_queue(struct sketch_queue* me) {
     kfree(me);
 }
 
-struct sketch_queue* new_sketch_queue(uint32_t sketch_mask) {
+struct sketch_queue* new_sketch_queue(uint32_t sketch_mask, size_t queue_size) {
     struct sketch_queue* q = new(struct sketch_queue);
-    q->queue = new_pkt_queue(1000);
+    q->queue = new_pkt_queue(queue_size);
+    q->mask = sketch_mask;
     int count;
     uint32_t x = sketch_mask;
     // gets the number of "1" bit of x.
