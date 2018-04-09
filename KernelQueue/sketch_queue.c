@@ -35,7 +35,7 @@ void delete_pkt_queue(struct pkt_queue* me) {
 }
 
 void sketch_queue_parse(struct sketch_queue* me, char* s) {
-    char buf[512];
+    char buf[480];
     strcpy(buf, s);
     s = buf;
     char* arg[64];
