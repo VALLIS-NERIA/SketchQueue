@@ -18,12 +18,21 @@
     <ClInclude Include="sketch_queue.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="big_queue.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="key.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="sketch_queue.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="main.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="big_queue.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

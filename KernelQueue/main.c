@@ -18,7 +18,7 @@ static int count1;
 
 int sketch_queue_work(struct sketch_queue* me) {
     while (!kthread_should_stop()) {
-        while (pq_empty(me->queue)) {}
+        if (pq_empty(me->queue)) { continue; }
         struct entry e;
         int err = pq_peek(me->queue, &e);
         if (!err) {
@@ -32,7 +32,9 @@ int sketch_queue_work(struct sketch_queue* me) {
     }
     return 0;
 }
-struct task_struct * qt;
+
+struct task_struct* qt;
+
 void sketch_queue_start(struct sketch_queue* me) {
     qt = kthread_create(sketch_queue_work, me, "work thread");
     kthread_bind(qt, 1);
@@ -51,6 +53,7 @@ void process_packet(struct entry e) {
         }
     }
 }
+
 //static struct sketch_queue* q;
 
 static int __init init(void) {
@@ -67,7 +70,7 @@ static int __init init(void) {
     sketch_queue_start(queues[0]);
     printk("start ok!\n");
     int c = 10000;
-    while(c-->0) {
+    while (c-- > 0) {
         struct entry e;
         e.key = rand_flow_key();
         e.size = rand_uint16();
@@ -80,7 +83,8 @@ static int __init init(void) {
 
 static void clean(void) {
     kthread_stop(qt);
-    udelay(1000);
+    udelay(1000)
+    ;
     delete_sketch_queue(queues[0]);
     kfree(queues);
     printk("count: %d, count1: %d\n", count, count1);

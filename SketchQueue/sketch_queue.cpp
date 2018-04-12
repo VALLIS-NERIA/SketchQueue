@@ -1,6 +1,7 @@
 #include "sketch_queue.h"
 #include <iostream>
 #include <atomic>
+#include <synchapi.h>
 using namespace std;
 
 //std::atomic<int> count = 0;
@@ -15,28 +16,40 @@ inline uint32_t flow_key_hash_old(struct flow_key* key) {
     return (uint32_t)hashCode;
 }
 
-int watch(decltype(sketch_queue::queue)& q, mutex& m) {
+int watch(sketch_queue* q) {
     while (!sketch_queue::ready);
-    int t = 0;
-    while (1) {
-        while (q.empty()) {}
-        m.lock();
-        auto item = q.front();
-        q.pop();
-        m.unlock();
+    while (true) {
+        int i = 0;
+        while (q->queue.empty()) {
+            abort();
+        }
+        q->mutex.lock();
+        auto item = q->queue.front();
+        q->queue.pop();
+        q->mutex.unlock();
+        //this_thread::sleep_for(10us);
         ++sketch_queue::count;
         //cout << ".";
         // do sketch update here
-        for (int i = 0; i < 1000; i++) {
-            auto hash = flow_key_hash_old(&item.key);
-            item.key.dstip = hash;
-            t += hash;
+        int t = 0;
+        for (int i = 1; i < 1000*q->cycle; i++) {
+            t += item.tag%i;
         }
-        if (t == 0)return t;
+        if (t == 0) {
+            std::cerr << "fatal";
+            return t;
+        }
     }
+    return 0;
 }
 
-sketch_queue::sketch_queue() { }
+
+sketch_queue::sketch_queue(int cyc) {
+    this->tag = cyc;
+    for (int i = 0; i < 16; ++i) {
+        cycle += (tag | (1 << i) >> i) * (i + 1) * 10;
+    }
+}
 
 sketch_queue::~sketch_queue() {
     th->detach();
@@ -45,11 +58,13 @@ sketch_queue::~sketch_queue() {
 
 
 void sketch_queue::start() {
-    th = new std::thread(watch, ref(queue), ref(mutex));
+    th = new std::thread(watch, this);
 }
 
 void sketch_queue::push(entry e) {
-    mutex.lock();
-    queue.push(e);
-    mutex.unlock();
+    if (e.tag & this->tag) {
+        mutex.lock();
+        queue.push(e);
+        mutex.unlock();
+    }
 }

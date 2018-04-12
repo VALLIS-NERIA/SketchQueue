@@ -1,6 +1,10 @@
 #include "sketch_queue.h"
+#include "big_queue.h"
 #include <Windows.h>
 #include <iostream>
+
+
+
 
 inline int rand_byte() {
     return rand() & 0xff;
@@ -27,7 +31,7 @@ inline uint32_t rand_uint16() {
 }
 
 
-int sketch_num = 5;
+int sketch_num = big_queue::sketch_count;
 
 int* queues;
 entry* entries;
@@ -42,25 +46,64 @@ void flow_gen(size_t size) {
         entries[i].key.dstport = rand_uint16();
         entries[i].key.protocol = rand_uint16();
         entries[i].size = rand_uint16();
-        queues[i] = rand_byte() % sketch_num;
+        entries[i].tag = rand_uint16();
+        //queues[i] = rand_byte() % sketch_num;
     }
     //return array;
 }
 
 std::atomic<bool> sketch_queue::ready = false;
 
+
+int main() {
+    //std::cin >> sketch_num;
+    flow_gen(100000);
+    big_queue bq;
+    int i = 0;
+    int n = 10;
+    //while (i < 1000000) {
+    bq.process_packets(entries, 100000);
+        //++i;
+    
+    //auto sks = new sketch_queue[sketch_num];
+    //for (int i = 0; i < sketch_num; i++) {
+    //    sks[i].tag = rand_uint16();
+    //    sks[i].start();
+    //}
+    //i = 0;
+    //while (i < 1000000) {
+    //    sks[queues[i % 100000]].push(entries[i % 100000]);
+    //    ++i;
+    //}
+
+    sketch_queue::ready = true;
+
+    Sleep(500);
+    std::cout << big_queue::count<<std::endl;
+    system("pause");
+    return 0;
+}
+
+
 int main__() {
-    std::cin >> sketch_num;
+    //std::cin >> sketch_num;
+
     flow_gen(100000);
     auto sks = new sketch_queue[sketch_num];
     for (int i = 0; i < sketch_num; i++) {
-        sks[i].start();
+        sks[i].tag =  (1 << (i));
+        sks[i].cycle = 10 * (i + 1);
     }
     int i = 0;
     int n = 10;
     while (i < 1000000) {
-        sks[queues[i % 100000]].push(entries[i % 100000]);
+        for (int j = 0; j < sketch_num; ++j) {
+            sks[j].push(entries[i % 100000]);
+        }
         ++i;
+    }
+    for (int i = 0; i < sketch_num; i++) {
+        sks[i].start();
     }
     sketch_queue::ready = true;
     Sleep(500);
@@ -69,14 +112,6 @@ int main__() {
     return 0;
 }
 
-
-void test(int x, int y) { std::cout << x + y; }
-
-int main() {
-    auto t = (void(*) (int, ...))test;
-    t(1, 2);
-    system("pause");
-}
 
 int main_() {
     flow_gen(100000);
