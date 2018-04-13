@@ -3,7 +3,7 @@
 #include <atomic>
 #include <synchapi.h>
 using namespace std;
-
+using namespace chrono;
 //std::atomic<int> count = 0;
 atomic<int> sketch_queue::count = 0;
 
@@ -17,11 +17,12 @@ inline uint32_t flow_key_hash_old(struct flow_key* key) {
 }
 
 int watch(sketch_queue* q) {
+    int c = 0;
     while (!sketch_queue::ready);
     while (true) {
         int i = 0;
-        while (q->queue.empty()) {
-            abort();
+        if (q->queue.empty()) {
+            break;
         }
         q->mutex.lock();
         auto item = q->queue.front();
@@ -32,14 +33,17 @@ int watch(sketch_queue* q) {
         //cout << ".";
         // do sketch update here
         int t = 0;
-        for (int i = 1; i < 1000*q->cycle; i++) {
-            t += item.tag%i;
+        for (int i = 1; i < 100 * q->cycle; i++) {
+            t += rand();
         }
         if (t == 0) {
-            std::cerr << "fatal";
+            cerr << "fatal";
             return t;
         }
+        ++c;
     }
+    q->end = high_resolution_clock::now();
+    cout << duration_cast<milliseconds>(q->end - q->begin).count() << ": " << c << endl;
     return 0;
 }
 
@@ -58,7 +62,8 @@ sketch_queue::~sketch_queue() {
 
 
 void sketch_queue::start() {
-    th = new std::thread(watch, this);
+    th = new thread(watch, this);
+    begin = high_resolution_clock::now();
 }
 
 void sketch_queue::push(entry e) {

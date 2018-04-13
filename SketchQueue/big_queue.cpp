@@ -1,45 +1,63 @@
 #include "big_queue.h"
 #include <iostream>
-using namespace std::literals;
-
-std::atomic<int> big_queue::count = 0;
+using namespace std;
+using namespace chrono;
+atomic<int> big_queue::count = 0;
 
 int watch_s(sketch* s) {
     while (!sketch_queue::ready);
     while (true) {
         while (!s->active) {}
         s->mutex.lock();
-        ++big_queue::count;
-
-        //++sketch_queue::count;
-
-        //cout << ".";
-        // do sketch update here
-        //for (int i = 0; i < 1000; i++) {
-        //std::this_thread::sleep_for(std::chrono::milliseconds(s->cycle));
-        //std::this_thread::sleep_for(10us);
-        //}
-        int t = 0;
-        for (int i = 1; i < 1000 * s->cycle; i++) {
-            t += s->next.tag%i;
+        int t = 1;
+        ++s->count;
+        for (int i = 1; i < 100 * s->cycle; i++) {
+            t += rand();
         }
         if (t == 0) {
-            std::cerr << "fatal";
+            cout << "fatal";
             return t;
         }
     unlock:
         //delete s->next;
         s->active = false;
         s->mutex.unlock();
-        //if (t == 0)return t;
     }
     return 0;
 }
 
 int proc(big_queue* me, entry ea[], int len) {
-    for (int j = 0; j < len; ++j) {
-        me->process_packet(ea[j]);
+    high_resolution_clock::time_point begin, end;
+    begin = high_resolution_clock::now();
+    int c = 0;
+    int j;
+    for (j = 0; j < len; ++j) {
+        bool busy;
+        do {
+            busy = false;
+            for (int i = 0; i < me->sketch_count; ++i) {
+                auto& s = me->sketches[i];
+                busy |= s.active;
+                //s.mutex.lock();
+            }
+        } while (busy);
+        // launch
+        for (int i = 0; i < me->sketch_count; ++i) {
+            auto& s = me->sketches[i];
+            if (ea[j].tag & (1 << i)) {
+                s.next = ea[j];
+                ++c;
+                s.active = true;
+            }
+            //s.mutex.unlock();
+        }
     }
+    for (int i = 0; i < me->sketch_count; ++i) {
+        auto& s = me->sketches[i];
+        cout << s.count << endl;
+    }
+    end = high_resolution_clock::now();
+    cout << duration_cast<milliseconds>(end - begin).count() << ": " << big_queue::count << "," << c << endl;
     return 0;
 }
 
@@ -63,13 +81,13 @@ void big_queue::process_packet(entry e) {
 }
 
 void big_queue::process_packets(entry ea[], int len) {
-    new std::thread(proc, this, ea, len);
+    new thread(proc, this, ea, len);
 }
 
 big_queue::big_queue() {
     for (int i = 0; i < sketch_count; ++i) {
         sketches[i].cycle = (i + 1) * 10;
-        ths[i] = new std::thread(watch_s, &sketches[i]);
+        ths[i] = new thread(watch_s, &sketches[i]);
     }
 
 }

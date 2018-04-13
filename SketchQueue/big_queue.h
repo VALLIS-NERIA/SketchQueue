@@ -21,7 +21,7 @@ public:
 class big_queue {
 public:
     static std::atomic<int> count;
-    static const int sketch_count = 6;
+    static const int sketch_count = 4;
     sketch sketches[sketch_count];
     std::thread* ths[sketch_count];
 

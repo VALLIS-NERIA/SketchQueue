@@ -18,10 +18,16 @@ public:
     //int cycle = 1;
     uint16_t tag;
     int cycle;
+    std::chrono::high_resolution_clock::time_point begin, end;
     sketch_queue(int tag);
     sketch_queue(){}
     ~sketch_queue();
     void start();
     void push(entry e);
+    entry& pop() {
+        if(queue.empty()) {
+
+        }
+    }
 };
 #endif // SKETCH_QUEUE_H

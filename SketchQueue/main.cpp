@@ -55,37 +55,21 @@ void flow_gen(size_t size) {
 std::atomic<bool> sketch_queue::ready = false;
 
 
-int main() {
+int main__() {
     //std::cin >> sketch_num;
     flow_gen(100000);
     big_queue bq;
-    int i = 0;
-    int n = 10;
-    //while (i < 1000000) {
+
     bq.process_packets(entries, 100000);
-        //++i;
-    
-    //auto sks = new sketch_queue[sketch_num];
-    //for (int i = 0; i < sketch_num; i++) {
-    //    sks[i].tag = rand_uint16();
-    //    sks[i].start();
-    //}
-    //i = 0;
-    //while (i < 1000000) {
-    //    sks[queues[i % 100000]].push(entries[i % 100000]);
-    //    ++i;
-    //}
 
     sketch_queue::ready = true;
 
-    Sleep(500);
-    std::cout << big_queue::count<<std::endl;
-    system("pause");
+    while (1);
     return 0;
 }
 
 
-int main__() {
+int main() {
     //std::cin >> sketch_num;
 
     flow_gen(100000);
@@ -96,9 +80,9 @@ int main__() {
     }
     int i = 0;
     int n = 10;
-    while (i < 1000000) {
+    while (i < 100000) {
         for (int j = 0; j < sketch_num; ++j) {
-            sks[j].push(entries[i % 100000]);
+            sks[j].push(entries[i]);
         }
         ++i;
     }
@@ -106,9 +90,10 @@ int main__() {
         sks[i].start();
     }
     sketch_queue::ready = true;
-    Sleep(500);
-    std::cout << sketch_queue::count;
-    system("pause");
+    //Sleep(500);
+    //std::cout << sketch_queue::count;
+    while (1);
+    //system("pause");
     return 0;
 }
 
