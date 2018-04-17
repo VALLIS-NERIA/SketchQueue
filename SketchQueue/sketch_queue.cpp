@@ -6,6 +6,7 @@ using namespace std;
 using namespace chrono;
 //std::atomic<int> count = 0;
 atomic<int> sketch_queue::count = 0;
+std::mutex sketch_queue::console_mutex;
 
 inline uint32_t flow_key_hash_old(struct flow_key* key) {
     int hashCode = (int)key->srcip;
@@ -19,11 +20,19 @@ inline uint32_t flow_key_hash_old(struct flow_key* key) {
 int watch(sketch_queue* q) {
     int c = 0;
     while (!sketch_queue::ready);
+    q->begin = high_resolution_clock::now();
+
+    bool flag = false;
     while (true) {
-        int i = 0;
-        if (q->queue.empty()) {
-            break;
+        while (q->queue.empty()) {
+            if (!flag) {
+                q->end = high_resolution_clock::now();
+                flag = true;
+            }
+            if (!sketch_queue::ready) goto end;
         }
+        flag = false;
+
         q->mutex.lock();
         auto item = q->queue.front();
         q->queue.pop();
@@ -42,8 +51,11 @@ int watch(sketch_queue* q) {
         }
         ++c;
     }
-    q->end = high_resolution_clock::now();
-    cout << duration_cast<milliseconds>(q->end - q->begin).count() << ": " << c << endl;
+end:
+    sketch_queue::console_mutex.lock();
+    cout << "sketch cost: " << q->cycle << ", in " << duration_cast<milliseconds>(q->end - q->begin).count()
+        << "ms: " << c << " processed, " << q->dropped_packet << " dropped" << endl;
+    sketch_queue::console_mutex.unlock();
     return 0;
 }
 
@@ -63,13 +75,18 @@ sketch_queue::~sketch_queue() {
 
 void sketch_queue::start() {
     th = new thread(watch, this);
-    begin = high_resolution_clock::now();
 }
 
 void sketch_queue::push(entry e) {
     if (e.tag & this->tag) {
+        if (queue.size() >= capacity) {
+            ++dropped_packet;
+            return;
+        }
         mutex.lock();
         queue.push(e);
         mutex.unlock();
     }
 }
+
+std::string sketch_queue::des() {}

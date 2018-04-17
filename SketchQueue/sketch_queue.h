@@ -10,6 +10,7 @@
 
 class sketch_queue {
 public:
+    static std::mutex console_mutex;
     static std::atomic<int> count;
     static std::atomic<bool> ready;
     std::mutex mutex;
@@ -18,16 +19,14 @@ public:
     //int cycle = 1;
     uint16_t tag;
     int cycle;
+    int capacity;
+    int dropped_packet=0;
     std::chrono::high_resolution_clock::time_point begin, end;
     sketch_queue(int tag);
     sketch_queue(){}
     ~sketch_queue();
     void start();
     void push(entry e);
-    entry& pop() {
-        if(queue.empty()) {
-
-        }
-    }
+    std::string des();
 };
 #endif // SKETCH_QUEUE_H

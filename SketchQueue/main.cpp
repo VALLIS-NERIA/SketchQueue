@@ -3,8 +3,8 @@
 #include <Windows.h>
 #include <iostream>
 
-
-
+using namespace std;
+using namespace chrono;
 
 inline int rand_byte() {
     return rand() & 0xff;
@@ -55,48 +55,84 @@ void flow_gen(size_t size) {
 std::atomic<bool> sketch_queue::ready = false;
 
 
-int main__() {
+int big() {
     //std::cin >> sketch_num;
-    flow_gen(100000);
-    big_queue bq;
+    big_queue* bq = new big_queue();
 
-    bq.process_packets(entries, 100000);
+    //bq.process_packets(entries, 100000);
 
+    //sketch_queue::ready = true;
+    sketch_queue::ready = true;
+    int i = 0;
+    bq->start();
+    while (i < 100000) {
+        auto pkt = rand() % 1000;
+        while (pkt-- > 0 && i < 100000) {
+            //for (int j = 0; j < sketch_num; ++j) {
+                bq->push(entries[i]);
+            //}
+            ++i;
+        }
+        this_thread::sleep_for(milliseconds(rand() % 10));
+    }
+    sketch_queue::ready = false;
+    //while (1);
+    return 0;
+}
+
+
+int multi() {
+    //std::cin >> sketch_num;
+
+    //flow_gen(100000);
+    auto sks = new sketch_queue[sketch_num];
+    for (int i = 0; i < sketch_num; i++) {
+        sks[i].tag =  (1 << (i));
+        sks[i].capacity = 1000;
+        //sks[i].cycle = 10 * (i + 1);
+    }
+    sks[0].cycle = 1;
+    sks[1].cycle = 2;
+    sks[2].cycle = 10;
+    sks[3].cycle = 50;
+    int i = 0;
+    int n = 10;
+    for (int i = 0; i < sketch_num; i++) {
+        sks[i].start();
+    }
     sketch_queue::ready = true;
 
-    while (1);
+    while (i < 100000) {
+        auto pkt = rand() % 1000;
+        while (pkt-- > 0 && i < 100000) {
+            for (int j = 0; j < sketch_num; ++j) {
+                sks[j].push(entries[i]);
+            }
+            ++i;
+        }
+        this_thread::sleep_for(milliseconds(rand() % 10));
+    }
+    sketch_queue::ready = false;
+
+    //Sleep(500);
+    //std::cout << sketch_queue::count;
+    //while (1);
+    //system("pause");
     return 0;
 }
 
 
 int main() {
-    //std::cin >> sketch_num;
-
     flow_gen(100000);
-    auto sks = new sketch_queue[sketch_num];
-    for (int i = 0; i < sketch_num; i++) {
-        sks[i].tag =  (1 << (i));
-        sks[i].cycle = 10 * (i + 1);
-    }
-    int i = 0;
-    int n = 10;
-    while (i < 100000) {
-        for (int j = 0; j < sketch_num; ++j) {
-            sks[j].push(entries[i]);
-        }
-        ++i;
-    }
-    for (int i = 0; i < sketch_num; i++) {
-        sks[i].start();
-    }
-    sketch_queue::ready = true;
-    //Sleep(500);
-    //std::cout << sketch_queue::count;
-    while (1);
-    //system("pause");
-    return 0;
-}
 
+    cout << "1 queue: " << endl;
+    big();
+    //getc(stdin);
+    this_thread::sleep_for(1s);
+    cout << "4 queue: " << endl;
+    multi();
+    while (1);
+}
 
 int main_() {
     flow_gen(100000);
