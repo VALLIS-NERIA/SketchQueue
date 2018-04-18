@@ -13,6 +13,8 @@ public:
     static std::mutex console_mutex;
     static std::atomic<int> count;
     static std::atomic<bool> ready;
+    static std::atomic<int> dropped;
+
     std::mutex mutex;
     std::queue<entry> queue;
     std::thread* th;

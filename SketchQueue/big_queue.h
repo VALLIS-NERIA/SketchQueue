@@ -23,12 +23,14 @@ class big_queue {
 public:
     static std::atomic<int> count;
     static const int sketch_count = 4;
+
     sketch sketches[sketch_count];
     std::thread* ths[sketch_count];
     std::queue<entry> queue;
     std::mutex mutex;
     int capacity=4000;
     std::atomic<int> dropped_count = 0;
+
     void start();
     void process_packet(entry e);
     void process_packets(entry ea[], int len);

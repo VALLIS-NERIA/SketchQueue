@@ -53,7 +53,7 @@ void flow_gen(size_t size) {
 }
 
 std::atomic<bool> sketch_queue::ready = false;
-
+int packet_speed;
 
 int big() {
     //std::cin >> sketch_num;
@@ -66,14 +66,14 @@ int big() {
     int i = 0;
     bq->start();
     while (i < 100000) {
-        auto pkt = rand() % 1000;
+        auto pkt = packet_speed / 100;
         while (pkt-- > 0 && i < 100000) {
             //for (int j = 0; j < sketch_num; ++j) {
-                bq->push(entries[i]);
+            bq->push(entries[i]);
             //}
             ++i;
         }
-        this_thread::sleep_for(milliseconds(rand() % 10));
+        this_thread::sleep_for(milliseconds(10));
     }
     sketch_queue::ready = false;
     //while (1);
@@ -87,7 +87,7 @@ int multi() {
     //flow_gen(100000);
     auto sks = new sketch_queue[sketch_num];
     for (int i = 0; i < sketch_num; i++) {
-        sks[i].tag =  (1 << (i));
+        sks[i].tag = (1 << (i));
         sks[i].capacity = 1000;
         //sks[i].cycle = 10 * (i + 1);
     }
@@ -103,14 +103,14 @@ int multi() {
     sketch_queue::ready = true;
 
     while (i < 100000) {
-        auto pkt = rand() % 1000;
+        auto pkt = packet_speed / 100;
         while (pkt-- > 0 && i < 100000) {
             for (int j = 0; j < sketch_num; ++j) {
                 sks[j].push(entries[i]);
             }
             ++i;
         }
-        this_thread::sleep_for(milliseconds(rand() % 10));
+        this_thread::sleep_for(milliseconds(10));
     }
     sketch_queue::ready = false;
 
@@ -124,20 +124,26 @@ int multi() {
 
 int main() {
     flow_gen(100000);
+    while (1) {
+        sketch_queue::count = 0;
+        sketch_queue::dropped = 0;
+        cin >> packet_speed;
+        cout << "1 queue: " << endl;
+        big();
+        //getc(stdin);
+        this_thread::sleep_for(1s);
 
-    cout << "1 queue: " << endl;
-    big();
-    //getc(stdin);
-    this_thread::sleep_for(1s);
-    cout << "4 queue: " << endl;
-    multi();
-    while (1);
+        cout << "4 queue: " << endl;
+        multi();
+        this_thread::sleep_for(1s);
+        cout << sketch_queue::count << "/" << sketch_queue::dropped << endl;
+    }
 }
 
 int main_() {
     flow_gen(100000);
     auto a = new entry[100][10000];
-    
+
     LARGE_INTEGER begin, end, frequency;
     //std::cout << "begin" << std::endl;
     QueryPerformanceFrequency(&frequency);

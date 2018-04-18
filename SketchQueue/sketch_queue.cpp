@@ -6,7 +6,8 @@ using namespace std;
 using namespace chrono;
 //std::atomic<int> count = 0;
 atomic<int> sketch_queue::count = 0;
-std::mutex sketch_queue::console_mutex;
+atomic<int> sketch_queue::dropped = 0;
+mutex sketch_queue::console_mutex;
 
 inline uint32_t flow_key_hash_old(struct flow_key* key) {
     int hashCode = (int)key->srcip;
@@ -38,7 +39,6 @@ int watch(sketch_queue* q) {
         q->queue.pop();
         q->mutex.unlock();
         //this_thread::sleep_for(10us);
-        ++sketch_queue::count;
         //cout << ".";
         // do sketch update here
         int t = 0;
@@ -56,6 +56,8 @@ end:
     cout << "sketch cost: " << q->cycle << ", in " << duration_cast<milliseconds>(q->end - q->begin).count()
         << "ms: " << c << " processed, " << q->dropped_packet << " dropped" << endl;
     sketch_queue::console_mutex.unlock();
+    sketch_queue::count+=c;
+    sketch_queue::dropped += q->dropped_packet;
     return 0;
 }
 
