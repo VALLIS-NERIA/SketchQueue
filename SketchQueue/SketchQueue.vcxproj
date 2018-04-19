@@ -121,11 +121,13 @@
   <ItemGroup>
     <ClInclude Include="big_queue.h" />
     <ClInclude Include="key.h" />
+    <ClInclude Include="seq_queue.h" />
     <ClInclude Include="sketch_queue.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="big_queue.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="seq_queue.cpp" />
     <ClCompile Include="sketch_queue.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

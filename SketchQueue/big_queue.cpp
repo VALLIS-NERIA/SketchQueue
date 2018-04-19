@@ -50,22 +50,25 @@ int proc(big_queue* me) {
         me->mutex.unlock();
 
         // wait
-        bool busy;
-        do {
-            busy = false;
-            for (int i = 0; i < me->sketch_count; ++i) {
-                auto& s = me->sketches[i];
-                busy |= s.active;
-            }
-        }
-        while (busy);
+        //bool busy;
+        //do {
+        //    busy = false;
+        //    for (int i = 0; i < me->sketch_count; ++i) {
+        //        auto& s = me->sketches[i];
+        //        busy |= s.active;
+        //    }
+        //}
+        //while (busy);
 
         // launch
         for (int i = 0; i < me->sketch_count; ++i) {
             auto& s = me->sketches[i];
             if (item.tag & (1 << i)) {
+                //while(s.active){}
+                s.mutex.lock();
                 s.next = item;
                 s.active = true;
+                s.mutex.unlock();
             }
         }
         ++c;
@@ -82,6 +85,9 @@ end:
 }
 
 void big_queue::start() {
+    for (int i = 0; i < sketch_count; ++i) {
+        ths[i] = new thread(watch_s, &sketches[i]);
+    }
     new thread(proc, this);
 }
 
@@ -109,12 +115,9 @@ void big_queue::process_packets(entry ea[], int len) {
 }
 
 big_queue::big_queue() {
-    for (int i = 0; i < sketch_count; ++i) {
-        ths[i] = new thread(watch_s, &sketches[i]);
-    }
-    sketches[0].cycle = 1;
-    sketches[1].cycle = 2;
-    sketches[2].cycle = 10;
+    sketches[0].cycle = 50;
+    sketches[1].cycle = 50;
+    sketches[2].cycle = 50;
     sketches[3].cycle = 50;
 }
 

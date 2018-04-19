@@ -2,6 +2,7 @@
 #include "big_queue.h"
 #include <Windows.h>
 #include <iostream>
+#include "seq_queue.h"
 
 using namespace std;
 using namespace chrono;
@@ -121,6 +122,23 @@ int multi() {
     return 0;
 }
 
+int seq() {
+    auto sq = new seq_queue();
+    int i = 0;
+    sketch_queue::ready = true;
+    sq->start();
+    while (i < 100000) {
+        auto pkt = packet_speed / 100;
+        while (pkt-- > 0 && i < 100000) {
+            sq->push(entries[i]);
+            ++i;
+        }
+        this_thread::sleep_for(milliseconds(10));
+    }
+    sketch_queue::ready = false;
+
+    return 0;
+}
 
 int main() {
     flow_gen(100000);
@@ -128,13 +146,16 @@ int main() {
         sketch_queue::count = 0;
         sketch_queue::dropped = 0;
         cin >> packet_speed;
+        cout << "seq:" << endl;
+        seq();
+        this_thread::sleep_for(5s);
         cout << "1 queue: " << endl;
         big();
         //getc(stdin);
-        this_thread::sleep_for(1s);
+        this_thread::sleep_for(5s);
 
         cout << "4 queue: " << endl;
-        multi();
+        //multi();
         this_thread::sleep_for(1s);
         cout << sketch_queue::count << "/" << sketch_queue::dropped << endl;
     }

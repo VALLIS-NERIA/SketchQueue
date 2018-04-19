@@ -28,7 +28,7 @@ public:
     std::thread* ths[sketch_count];
     std::queue<entry> queue;
     std::mutex mutex;
-    int capacity=4000;
+    int capacity = 4000;
     std::atomic<int> dropped_count = 0;
 
     void start();
