@@ -14,6 +14,7 @@ public:
     static std::atomic<int> count;
     static std::atomic<bool> ready;
     static std::atomic<int> dropped;
+    static std::chrono::high_resolution_clock::duration time;
 
     std::mutex mutex;
     std::queue<entry> queue;

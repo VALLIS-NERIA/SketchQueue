@@ -76,11 +76,11 @@ int proc(big_queue* me) {
 end:
     for (int i = 0; i < me->sketch_count; ++i) {
         auto& s = me->sketches[i];
-        cout << "s" << i << " (cost "<<s.cycle<<") processed " << s.count << endl;
+        //cout << "s" << i << " (cost "<<s.cycle<<") processed " << s.count << endl;
     }
     end = high_resolution_clock::now();
-    cout << "in " << duration_cast<milliseconds>(end - begin).count() << ": " << c << " processed, " << me->dropped_count
-        << " dropped" << endl;
+    //cout << "in " << duration_cast<milliseconds>(end - begin).count() << ": " << c << " processed, " << me->dropped_count        << " dropped" << endl;
+    cout << duration_cast<milliseconds>(end - begin).count() << "," << c << "," << me->dropped_count ;
     return 0;
 }
 

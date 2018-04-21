@@ -2,6 +2,7 @@
 #include "big_queue.h"
 #include <Windows.h>
 #include <iostream>
+#include <fstream>
 #include "seq_queue.h"
 
 using namespace std;
@@ -142,22 +143,28 @@ int seq() {
 
 int main() {
     flow_gen(100000);
-    while (1) {
+    ofstream log("all 50.txt");
+    cout.rdbuf(log.rdbuf());
+    for (packet_speed = 20000; packet_speed < 200000; packet_speed += 20000) {
+        cout << packet_speed << ",";
         sketch_queue::count = 0;
         sketch_queue::dropped = 0;
-        cin >> packet_speed;
-        cout << "seq:" << endl;
+        sketch_queue::time = high_resolution_clock::duration(0);
+        //cin >> packet_speed;
+        //cout << "seq:" << endl;
         seq();
-        this_thread::sleep_for(5s);
-        cout << "1 queue: " << endl;
+        this_thread::sleep_for(1s);
+        //cout << "1 queue: " << endl;
+        cout << ",";
         big();
         //getc(stdin);
-        this_thread::sleep_for(5s);
-
-        cout << "4 queue: " << endl;
-        //multi();
         this_thread::sleep_for(1s);
-        cout << sketch_queue::count << "/" << sketch_queue::dropped << endl;
+        cout << ",";
+        //cout << "4 queue: " << endl;
+        multi();
+        this_thread::sleep_for(1s);
+        cout << duration_cast<milliseconds>(sketch_queue::time).count() << "," << sketch_queue::count << "," << sketch_queue::dropped << endl;
+        log.flush();
     }
 }
 

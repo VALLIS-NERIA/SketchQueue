@@ -1,0 +1,25 @@
+reset
+set size 0.7,0.7
+set terminal postscript eps enhanced "Times" 18
+# set terminal postscript eps enhanced "NimbusSanL-Regu" fontfile "uhvr8a.pfb" 24
+#set key font ",22"
+set key left top box
+
+set xl 'Packet arrive speed (packet per millisecond)'
+set yl 'Measurement speed (packet per millisecond)'
+
+FILE = "all 50.txt"
+set output "50.eps"
+
+plot \
+FILE u ($1)/1000:($3)/($2) with linespoints pointtype 2 dt 1 lw 5.5 pointsize 2 title '1 queue (serial)',\
+FILE u ($1)/1000:($6)/($5) with linespoints pointtype 4 dt 1 lw 5.5 pointsize 2 title '1 queue (parallel)',\
+FILE u ($1)/1000:($9)/($8)/2 with linespoints pointtype 6 dt 1 lw 5.5 pointsize 2 title '4 queues (parallel)
+
+FILE = "1-50.txt"
+set output "vary.eps"
+
+plot \
+FILE u ($1)/1000:($3)/($2) with linespoints pointtype 2 dt 1 lw 5.5 pointsize 2 title '1 queue (serial)',\
+FILE u ($1)/1000:($6)/($5) with linespoints pointtype 4 dt 1 lw 5.5 pointsize 2 title '1 queue (parallel)',\
+FILE u ($1)/1000:($9)/($8)/2 with linespoints pointtype 6 dt 1 lw 5.5 pointsize 2 title '4 queues (parallel)
